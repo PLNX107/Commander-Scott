@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+  <meta name="theme-color" content="#0a0e0a" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="CMD Counter" />
+  <meta name="description" content="Magic: The Gathering Commander life counter PWA" />
+  <title>CMD Counter</title>
+  <link rel="manifest" href="manifest.json" />
+  <link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png" />
+  <link rel="apple-touch-icon" href="icons/icon-192.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323:wght@400&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+
+  <!-- SETUP SCREEN -->
+  <div id="screen-setup" class="screen active">
+    <div class="setup-inner">
+      <div class="logo-block">
+        <div class="logo-pixel">⚔</div>
+        <h1 class="logo-title">CMD<br/>COUNTER</h1>
+        <p class="logo-sub">Magic: The Gathering</p>
+      </div>
+
+      <div class="setup-section">
+        <label class="setup-label">FORMAT</label>
+        <div class="btn-group" id="format-group">
+          <button class="btn-toggle active" data-value="commander" onclick="selectFormat(this)">COMMANDER<br/><span>40 life</span></button>
+          <button class="btn-toggle" data-value="standard" onclick="selectFormat(this)">STANDARD<br/><span>20 life</span></button>
+        </div>
+      </div>
+
+      <div class="setup-section">
+        <label class="setup-label">PLAYERS</label>
+        <div class="player-count-row">
+          <button class="btn-count" onclick="adjustPlayerCount(-1)">−</button>
+          <span id="player-count-display">4</span>
+          <button class="btn-count" onclick="adjustPlayerCount(1)">+</button>
+        </div>
+      </div>
+
+      <div class="setup-section">
+        <label class="setup-label">PLAYER NAMES &amp; COLORS</label>
+        <div id="player-setup-list"></div>
+      </div>
+
+      <button class="btn-start" onclick="startGame()">▶ START GAME</button>
+
+      <div class="setup-footer">
+        <button class="btn-ghost" onclick="showImportExport()">📂 LOAD SAVE</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- GAME SCREEN -->
+  <div id="screen-game" class="screen">
+    <div id="game-header">
+      <div id="turn-indicator">
+        <span class="turn-label">TURN</span>
+        <span id="current-turn-name">—</span>
+      </div>
+      <div id="header-actions">
+        <button class="btn-icon" onclick="undoLast()" title="Undo">↩</button>
+        <button class="btn-icon" onclick="showMenu()" title="Menu">☰</button>
+      </div>
+    </div>
+
+    <div id="player-grid"></div>
+
+    <div id="game-footer">
+      <button class="btn-next-turn" onclick="nextTurn()">NEXT TURN ▶</button>
+    </div>
+  </div>
+
+  <!-- COMMANDER DAMAGE OVERLAY -->
+  <div id="overlay-cmd" class="overlay hidden">
+    <div class="overlay-panel">
+      <div class="overlay-header">
+        <span id="cmd-overlay-title">CMD DAMAGE</span>
+        <button class="btn-close" onclick="closeCmdOverlay()">✕</button>
+      </div>
+      <p class="overlay-sub">Damage received from each commander</p>
+      <div id="cmd-damage-list"></div>
+      <button class="btn-ghost overlay-done" onclick="closeCmdOverlay()">DONE</button>
+    </div>
+  </div>
+
+  <!-- MENU OVERLAY -->
+  <div id="overlay-menu" class="overlay hidden">
+    <div class="overlay-panel">
+      <div class="overlay-header">
+        <span>MENU</span>
+        <button class="btn-close" onclick="closeMenu()">✕</button>
+      </div>
+      <div class="menu-list">
+        <button class="btn-menu-item" onclick="newGame()">⚔ NEW GAME</button>
+        <button class="btn-menu-item" onclick="showImportExport()">💾 SAVE / LOAD</button>
+        <button class="btn-menu-item" onclick="showHistory()">📜 CHANGE LOG</button>
+        <button class="btn-menu-item danger" onclick="closeMenu()">✕ CANCEL</button>
+      </div>
+      <div class="backup-status" id="backup-status-display"></div>
+    </div>
+  </div>
+
+  <!-- IMPORT/EXPORT OVERLAY -->
+  <div id="overlay-io" class="overlay hidden">
+    <div class="overlay-panel">
+      <div class="overlay-header">
+        <span>SAVE / LOAD</span>
+        <button class="btn-close" onclick="closeImportExport()">✕</button>
+      </div>
+      <div class="menu-list">
+        <button class="btn-menu-item" onclick="exportData()">⬇ EXPORT BACKUP</button>
+        <button class="btn-menu-item" onclick="triggerImport()">⬆ IMPORT BACKUP</button>
+      </div>
+      <input type="file" id="import-file-input" accept=".json" style="display:none" onchange="importData(event)" />
+      <div id="io-status" class="io-status"></div>
+    </div>
+  </div>
+
+  <!-- HISTORY OVERLAY -->
+  <div id="overlay-history" class="overlay hidden">
+    <div class="overlay-panel">
+      <div class="overlay-header">
+        <span>CHANGE LOG</span>
+        <button class="btn-close" onclick="closeHistory()">✕</button>
+      </div>
+      <div id="history-list" class="history-list"></div>
+      <button class="btn-ghost overlay-done" onclick="closeHistory()">CLOSE</button>
+    </div>
+  </div>
+
+  <!-- TOAST -->
+  <div id="toast" class="toast hidden"></div>
+
+  <script src="data/storage.js"></script>
+  <script src="data/import-export.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
