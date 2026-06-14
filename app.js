@@ -26,6 +26,10 @@ const COLOR_LABELS = { W:'White', U:'Blue', B:'Black', R:'Red', G:'Green', C:'Co
 
 // ── Boot ─────────────────────────────────────────────────────
 window.addEventListener('DOMContentLoaded', async () => {
+  // Fix iOS: prevent passive touch listeners from blocking button taps
+  // by adding a no-op touchstart to document (unlocks fast-tap on all elements)
+  document.addEventListener('touchstart', function(){}, {passive: true});
+
   const saved = await loadFromDB();
   if (saved && saved.gameStarted) {
     state = saved;
@@ -33,7 +37,6 @@ window.addEventListener('DOMContentLoaded', async () => {
     renderGame();
   } else {
     if (saved) {
-      // Restore setup preferences
       setupPlayerCount = saved.playerCount || 4;
       setupFormat = saved.format || 'commander';
     }

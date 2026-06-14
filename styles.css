@@ -35,7 +35,15 @@
   -webkit-tap-highlight-color: transparent;
 }
 
-html, body {
+html {
+  height: 100%;
+  /* Prevent iOS bounce/overscroll interfering with touch events */
+  overflow: hidden;
+  position: fixed;
+  width: 100%;
+}
+
+body {
   width: 100%;
   height: 100%;
   overflow: hidden;
@@ -44,9 +52,11 @@ html, body {
   font-family: var(--font-pixel);
   font-size: 10px;
   image-rendering: pixelated;
+  /* iOS Safari: ensure touch events are not swallowed */
+  -webkit-overflow-scrolling: touch;
 }
 
-/* Scanline overlay */
+/* Scanline overlay — must NEVER intercept touches */
 body::before {
   content: '';
   position: fixed;
@@ -58,8 +68,34 @@ body::before {
     rgba(0,0,0,0.08) 2px,
     rgba(0,0,0,0.08) 4px
   );
-  pointer-events: none;
+  pointer-events: none !important;
+  touch-action: none;
   z-index: 9999;
+  /* Ensure it never captures any input */
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+/* All interactive elements: eliminate 300ms tap delay */
+button,
+input,
+.btn-toggle,
+.btn-count,
+.btn-start,
+.btn-ghost,
+.btn-icon,
+.btn-life,
+.btn-eliminate,
+.btn-tiny,
+.btn-cmd,
+.btn-menu-item,
+.btn-next-turn,
+.btn-close,
+.stat-chip,
+.color-pip,
+.life-display {
+  touch-action: manipulation;
+  cursor: pointer;
 }
 
 /* ============================================================
@@ -72,6 +108,8 @@ body::before {
   inset: 0;
   overflow-y: auto;
   overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
+  touch-action: pan-y;
 }
 
 .screen.active {
@@ -364,6 +402,8 @@ body::before {
 #player-grid {
   flex: 1;
   overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  touch-action: pan-y;
   padding: 8px;
   display: grid;
   gap: 8px;
@@ -666,6 +706,8 @@ body::before {
   max-width: 480px;
   max-height: 85vh;
   overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  touch-action: pan-y;
   padding: 16px;
   animation: slide-up 0.2s ease-out;
 }

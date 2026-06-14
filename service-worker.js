@@ -2,7 +2,7 @@
    service-worker.js — PWA offline cache
    ============================================================ */
 
-const CACHE_NAME = 'cmd-counter-v1';
+const CACHE_NAME = 'cmd-counter-v2';
 
 const ASSETS = [
   './',
