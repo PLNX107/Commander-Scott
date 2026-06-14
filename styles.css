@@ -427,6 +427,12 @@ input,
   grid-template-columns: 1fr 1fr;
 }
 
+/* 7-8 players: 2x4 */
+#player-grid.players-7,
+#player-grid.players-8 {
+  grid-template-columns: 1fr 1fr;
+}
+
 /* ============================================================
    PLAYER CARD
    ============================================================ */
@@ -960,8 +966,10 @@ input,
 
 @media (min-width: 900px) {
   #player-grid.players-5,
-  #player-grid.players-6 {
-    grid-template-columns: 1fr 1fr 1fr;
+  #player-grid.players-6,
+  #player-grid.players-7,
+  #player-grid.players-8 {
+    grid-template-columns: 1fr 1fr 1fr 1fr;
   }
 }
 

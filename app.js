@@ -90,7 +90,7 @@ function renderSetup() {
 function getSelectedColors(player, index) {
   if (player && player.colors) return player.colors;
   // Default color assignments
-  const defaults = [['G'],['U'],['B'],['R'],['W'],['C']];
+  const defaults = [['G'],['U'],['B'],['R'],['W'],['C'],['G','U'],['R','B']];
   return defaults[index] || ['C'];
 }
 
@@ -118,7 +118,7 @@ function selectFormat(btn) {
 }
 
 function adjustPlayerCount(delta) {
-  setupPlayerCount = Math.max(1, Math.min(6, setupPlayerCount + delta));
+  setupPlayerCount = Math.max(1, Math.min(8, setupPlayerCount + delta));
   document.getElementById('player-count-display').textContent = setupPlayerCount;
   renderSetup();
 }
